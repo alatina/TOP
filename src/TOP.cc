@@ -5,7 +5,7 @@
 #include <tcl.h>
 #include <tk.h>
 
-static int do_wish;
+static bool do_wish = false;
 
 int tk_Python(ClientData /*clientdata*/, Tcl_Interp *interp, int argc, char **argv )
 {
@@ -46,10 +46,14 @@ int Tcl_AppInit(Tcl_Interp *interp )
 
 int main(int argc, char *argv[])
 {
-  // include end message at exit of TOP
-  // here we go
-  do_wish = 1;
-  if (do_wish) Tk_Main(argc,argv,&Tcl_AppInit);
+  do_wish = strncmp(argv[1], "-w", 2) == 0;
+  if (do_wish) {
+    --argc;
+    for (int i=1; i<argc; i++) {
+      argv[i] = argv[i+1];
+    }
+    Tk_Main(argc,argv,&Tcl_AppInit);
+  }
   Tcl_Main(argc,argv,&Tcl_AppInit);
-  exit(0);
+  return 0;
 }
